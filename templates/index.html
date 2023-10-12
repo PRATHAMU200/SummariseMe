@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generative AI Text Summarizer</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Generative AI Text Summarizer</h1>
+        <div class="theme-toggle">
+            <label class="switch">
+                <input type="checkbox" id="darkModeToggle">
+                <span class="slider round"></span>
+            </label>
+            <label for="darkModeToggle">Dark Mode</label>
+        </div>
+        <form class="input-section">
+            <label for="sourceType">Select Source Type:</label>
+            <select id="sourceType" name="sourceType">
+                <option value="youtube">YouTube Video Link</option>
+                <option value="pdf">PDF Document</option>
+                <option value="text">Long Text</option>
+            </select>
+            <div id="inputFields">
+                <!-- Input fields based on source type will be dynamically added here -->
+            </div>
+            <button id="generateSummaryBtn">Generate Summary</button>
+            <div id="processingAnimation" class="hidden">
+                <div class="spinner-container">
+                    <div class="spinner"></div>
+                  </div>
+                <p>Processing... wait for few minutes</p>
+              </div>
+        </form>
+        <div class="output-section">
+            <h2>Summary:</h2>
+            <div id="summaryResult">>> {{summary}}</div>
+        </div>
+    </div>
+    <script src="static/script.js"></script>
+</body>
+</html>
