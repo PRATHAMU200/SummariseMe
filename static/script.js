@@ -1,22 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const sourceModelSelect = document.getElementById('sourceModel');
     const sourceTypeSelect = document.getElementById('sourceType');
     const inputFields = document.getElementById('inputFields');
     const generateSummaryBtn = document.getElementById('generateSummaryBtn');
     const summaryResult = document.getElementById('summaryResult');
-    const darkModeToggle = document.getElementById('darkModeToggle');
+    // const darkModeToggle = document.getElementById('darkModeToggle');
     
 
-    // Check if the user has a preferred theme and apply it
-    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    if (prefersDarkScheme.matches) {
-        document.body.classList.toggle('dark-mode');
-        darkModeToggle.checked = true;
-    }
+    // // Check if the user has a preferred theme and apply it
+    // const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    // if (prefersDarkScheme.matches) {
+    //     document.body.classList.toggle('dark-mode');
+    //     darkModeToggle.checked = true;
+    // }
 
-    darkModeToggle.addEventListener('change', () => {
-        // Toggle dark mode
-        document.body.classList.toggle('dark-mode');
-    });
+    // darkModeToggle.addEventListener('change', () => {
+    //     // Toggle dark mode
+    //     document.body.classList.toggle('dark-mode');
+    // });
 
     sourceTypeSelect.addEventListener('change', () => {
         const selectedOption = sourceTypeSelect.value;
@@ -54,6 +55,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <label for="longText">Enter Long Text:</label>
                 <textarea id="longText" name="text" rows="6" placeholder="Enter your text here..."></textarea>
             `;
+        } else if (selectedOption === 'select') {
+            // Add textarea for entering long text
+            inputFields.innerHTML = `
+            `;
         }
     });
 
@@ -63,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById("processingAnimation").classList.remove("hidden");
 
     const selectedOption = sourceTypeSelect.value;
+    const selectedModel = sourceModelSelect.value;
     let inputText = 'Nonee';
     if (selectedOption === 'youtube' || selectedOption === 'text') {
             // Get the input text from the appropriate input field
@@ -74,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({inputText: inputText, selectedOption: selectedOption}),
+            body: JSON.stringify({inputText: inputText, selectedOption: selectedOption, selectedModel: selectedModel}),
         })
         .then((response) => {
             if (!response.ok) {

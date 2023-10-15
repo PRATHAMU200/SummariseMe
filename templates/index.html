@@ -9,16 +9,23 @@
 <body>
     <div class="container">
         <h1>Generative AI Text Summarizer</h1>
-        <div class="theme-toggle">
+        <!-- <div class="theme-toggle">
             <label class="switch">
                 <input type="checkbox" id="darkModeToggle">
                 <span class="slider round"></span>
             </label>
             <label for="darkModeToggle">Dark Mode</label>
-        </div>
+        </div> -->
         <form class="input-section">
+            <label for="sourceModel">Select Model Type:</label>
+            <select id="sourceModel" name="sourceModel">
+                <option value="bart">Any</option>
+                <option value="bart">Facebook-Bart</option>
+                <option value="pegasus">Google-Pegasus</option>
+            </select>
             <label for="sourceType">Select Source Type:</label>
             <select id="sourceType" name="sourceType">
+                <option value="select">Select</option>
                 <option value="youtube">YouTube Video Link</option>
                 <option value="pdf">PDF Document</option>
                 <option value="text">Long Text</option>

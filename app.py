@@ -6,11 +6,13 @@ app = Flask(__name__)
 def main():
     if request.method == 'POST':
         query = request.form['sourceType']
+        model = 'bart'
+        print(query,model)
         if query in ['youtube', 'text']:
             text = request.form['text']
             try:
                 # Generate the summary based on the source type and input text
-                summary = generate_summary(query, text)
+                summary = generate_summary(query, text, model)
 
                 # Return the summary as a JSON response
                 return render_template("index.html",summary=summary)
@@ -30,11 +32,14 @@ def summary():
         # Process the data (you can do any processing you need here)
         input_data = data.get('inputText')
         selectedOption = data.get('selectedOption')
+        model = data.get('selectedModel')
         #result = f"You submitted: {input_data} and {selectedOption}"
-        summary = generate_summary(selectedOption, input_data)
+        summary = generate_summary(selectedOption, input_data , model)
         return jsonify({'result': summary})
     except Exception as e:
         return jsonify({'error': str(e)})
+    
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -3,8 +3,15 @@ from youtube_transcript_api import YouTubeTranscriptApi
 from transformers import pipeline
 summarization = pipeline("summarization",model="facebook/bart-large-cnn")
 
-
-def generate_summary(source_type, Text):
+def checkmodel(model):
+    if model=='bart':
+        return "facebook/bart-large-cnn"
+    elif model=='pegasus':
+        return "google/pegasus-large"
+    else:
+        return "facebook/bart-large-cnn"
+def generate_summary(source_type, Text,model):
+    #summarization = pipeline("summarization",model=checkmodel(model))
     if source_type=='youtube':
         print("extracting youtube caption\n")
         youtubecaption(Text)
@@ -12,16 +19,24 @@ def generate_summary(source_type, Text):
             Text = f.read()
         print("done")
     print("Processing")
-    num_iters = int(len(Text)/4000)
     summary = ""
-    for i in range(0, num_iters + 1):
-        start = i * 4500
-        end = (i + 1) * 4500
-        #print("input text \n" + full_transcript[start:end])
-        out = summarization(Text[start:end], min_length = 100, max_length=500)[0]
-        summary += out['summary_text']
-        print(out['summary_text'])
+    chunk = chunks(Text)
+    print(chunk[1])
+    for i in range (0,len(chunk[0])):
+         #out = summarization(chunk[0][i], min_length = (chunk[1][i]//10), max_length=((chunk[1][i]*4)//10))[0]
+         out = summarization(chunk[0][i] , truncation=True)[0]
+         summary += out['summary_text']
+         print(out['summary_text'])
     return summary
+    #num_iters = int(len(Text)/4000)
+    # for i in range(0, num_iters + 1):
+    #     start = i * 4500
+    #     end = (i + 1) * 4500
+    #     #print("input text \n" + full_transcript[start:end])
+    #     out = summarization(Text[start:end], min_length = 100, max_length=500)[0]
+    #     summary += out['summary_text']
+    #     print(out['summary_text'])
+    #return summary
 
 def youtubecaption(url):
     if ("https://") in url:
@@ -40,6 +55,19 @@ def youtubecaption(url):
             f.write("{} ".format(i['text']))
         
 
+def chunks(s):
+    lword = [[], []]
+    l , u = 0 , 1
+    while((len(s)-l)>20):
+        word = 0
+        while(word<1000 and u<len(s)):
+            if(s[u]==' '):
+                word+=1
+            u+=1
+        lword[0].append(s[l:u])
+        lword[1].append(word)
+        l = u
+    return lword
 
 
 Text = '''
