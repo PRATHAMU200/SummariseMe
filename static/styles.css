@@ -111,12 +111,13 @@ input:checked + .slider:before {
 
 .input-section input[type="text"],
 .input-section textarea,
-.input-section #pdfFile {
+.input-section #pagenumbers {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #666;
     border-radius: 5px;
+    box-sizing: border-box;
 }
 
 /* Styles for the processing animation */
@@ -149,7 +150,32 @@ input:checked + .slider:before {
     100% { transform: rotate(360deg); }
   }
 
+  .pagenumber{
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #666;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
   
-/* Add more CSS styles as needed */
+  .drop-pdf-upload{
+    width: 45em;
+    padding: 15px;
+    border: 1px solid #333;
+  }
+  #pdfFileDropArea{
+    border: 2px dashed #bbb;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    padding: 50px;
+    text-align: center;
+    font: 21pt bold arial;
+    /* color: #bbb; */
+  }
+  .dragover{
+    background-color: #bbb;
+  }
+
 
 

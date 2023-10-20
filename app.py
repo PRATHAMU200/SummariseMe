@@ -1,43 +1,38 @@
 from flask import Flask, render_template, request, jsonify
-from main import generate_summary
+from main import extractpdftext, generate_summary
 app = Flask(__name__)
 
 @app.route('/', methods=['POST', 'GET'])
 def main():
-    if request.method == 'POST':
-        query = request.form['sourceType']
-        model = 'bart'
-        print(query,model)
-        if query in ['youtube', 'text']:
-            text = request.form['text']
-            try:
-                # Generate the summary based on the source type and input text
-                summary = generate_summary(query, text, model)
-
-                # Return the summary as a JSON response
-                return render_template("index.html",summary=summary)
-            except Exception as e:
-                # Handle errors gracefully
-                return jsonify({'error': str(e)}), 500
-        elif query == 'pdf':
-            text = None
-
     return render_template("index.html")
 
 @app.route('/summary',methods=['POST'])
 def summary():
     try:
-        # Get the data from the POST request
-        data = request.get_json()
-        # Process the data (you can do any processing you need here)
+        data = request.form
         input_data = data.get('inputText')
         selectedOption = data.get('selectedOption')
         model = data.get('selectedModel')
+        from_page = data.get('from')
+        till_page = data.get('till')
+        uploaded_file = request.files.get('file')
+        if(selectedOption=='pdf'):
+            if uploaded_file:
+                filepath = f'temp/{uploaded_file.filename}'
+                uploaded_file.save(filepath)
+                
+                print(f"File recived {input_data} , {uploaded_file.filename}, {uploaded_file}")
+                extractpdftext(filepath,int(from_page),int(till_page))
+                summary = generate_summary(selectedOption, input_data , model)
+                return jsonify({'result': summary})
+            else:
+                return jsonify({'result': "File Not found or file invalid"})
         #result = f"You submitted: {input_data} and {selectedOption}"
+        #yield "answer is coming"
         summary = generate_summary(selectedOption, input_data , model)
         return jsonify({'result': summary})
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return jsonify({'result': "error: "+str(e)})
     
 
 

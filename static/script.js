@@ -4,20 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputFields = document.getElementById('inputFields');
     const generateSummaryBtn = document.getElementById('generateSummaryBtn');
     const summaryResult = document.getElementById('summaryResult');
-    // const darkModeToggle = document.getElementById('darkModeToggle');
-    
-
-    // // Check if the user has a preferred theme and apply it
-    // const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    // if (prefersDarkScheme.matches) {
-    //     document.body.classList.toggle('dark-mode');
-    //     darkModeToggle.checked = true;
-    // }
-
-    // darkModeToggle.addEventListener('change', () => {
-    //     // Toggle dark mode
-    //     document.body.classList.toggle('dark-mode');
-    // });
 
     sourceTypeSelect.addEventListener('change', () => {
         const selectedOption = sourceTypeSelect.value;
@@ -33,30 +19,66 @@ document.addEventListener('DOMContentLoaded', () => {
                 <input type="text" id="youtubeLink" name="text" placeholder="https://www.youtube.com/watch?v=...">
             `;
         } else if (selectedOption === 'pdf') {
-            // Add updated file input with drag-and-drop functionality for PDFs
             inputFields.innerHTML = `
                 <div class="pdf-upload">
-                    <label for="pdfFile">Upload PDF Document:</label>
-                    <input type="file" id="pdfFile" accept=".pdf">
-                    <p>OR</p>
-                    <div id="dragAndDropArea">
-                        <p>Drag & Drop PDF Here</p>
+                    <div class="drop-pdf-upload">
+                    <div id="pdfFileDropArea">
+                        <p id="file-name">Drag & drop files here or click to select files</p>
+                        <input type="file" id="pdfFileInput" accept=".pdf" style="display: none;">
+                    </div>
+                        
+                    </div>
+                    <div id="pagenumbers">
+                        <label for="from">From PageNo.: </label>
+                        <input class="pagenumber" type="number" id="from" placeholder="From:" required>
+                        <label for="till">Till PageNo.: </label>
+                        <input class="pagenumber" type="number" id="till" placeholder="Till:" required>
                     </div>
                 </div>
             `;
 
             // Add event listeners for drag-and-drop functionality
-            const dragAndDropArea = document.getElementById('dragAndDropArea');
-            dragAndDropArea.addEventListener('dragover', handleDragOver);
-            dragAndDropArea.addEventListener('drop', handleFileDrop);
+            const pdfFileDropArea = document.getElementById('pdfFileDropArea');
+            const pdfFileInput = document.getElementById('pdfFileInput');
+            pdfFileDropArea.addEventListener('click', () => {
+                pdfFileInput.click(); // Trigger the hidden input file element
+            });
+            pdfFileDropArea.addEventListener('dragover', (e) => {
+                e.preventDefault(); // Prevent default behavior
+                pdfFileDropArea.classList.add('dragover'); // Add a CSS class for styling
+            });
+            
+            pdfFileDropArea.addEventListener('dragleave', () => {
+                pdfFileDropArea.classList.remove('dragover'); // Remove the dragover class
+            });
+            
+            pdfFileDropArea.addEventListener('drop', (e) => {
+                e.preventDefault(); // Prevent default behavior
+                pdfFileDropArea.classList.remove('dragover'); // Remove the dragover class
+                const files = e.dataTransfer.files; // Get the dropped files
+                handleDroppedFiles(files);
+            });
+            
+            pdfFileInput.addEventListener('change', (e) => {
+                const files = e.target.files; // Get the selected files
+                handleDroppedFiles(files);
+            });
+            
+            function handleDroppedFiles(files) {
+                // Process the dropped or selected files (e.g., upload to the server)
+                for (const file of files) {
+                    const filename = file.name;
+                    console.log('Selected file:', file.name);
+                    document.getElementById("file-name").innerText="Selected: "+file.name;
+
+                }
+            }
         } else if (selectedOption === 'text') {
-            // Add textarea for entering long text
             inputFields.innerHTML = `
                 <label for="longText">Enter Long Text:</label>
                 <textarea id="longText" name="text" rows="6" placeholder="Enter your text here..."></textarea>
             `;
         } else if (selectedOption === 'select') {
-            // Add textarea for entering long text
             inputFields.innerHTML = `
             `;
         }
@@ -70,27 +92,45 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectedOption = sourceTypeSelect.value;
     const selectedModel = sourceModelSelect.value;
     let inputText = 'Nonee';
+    let file = 'Nonee';
+    let till = 'Nonee';
+    let from = 'Nonee';
+    let goOn = false;
     if (selectedOption === 'youtube' || selectedOption === 'text') {
-            // Get the input text from the appropriate input field
             inputText = document.getElementById(selectedOption === 'youtube' ? 'youtubeLink' : 'longText').value;
+            goOn = true;
         }
-
+    else if (selectedOption=='pdf') {
+        from = document.getElementById('from').value;
+        till = document.getElementById('till').value;
+        file = pdfFileInput.files[0];
+        inputText = file.name;
+        console.log(file+"yes");
+        if(file){
+            goOn = true;
+            console.log("files yes");
+        }
+    }
+    if(goOn){
+        const formData = new FormData();
+        formData.append('inputText', inputText);
+        formData.append('selectedOption', selectedOption);
+        formData.append('selectedModel', selectedModel);
+        formData.append('from', from);
+        formData.append('till', till);
+        formData.append('file', file);    
     fetch('/summary',{
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({inputText: inputText, selectedOption: selectedOption, selectedModel: selectedModel}),
+            body: formData,
         })
         .then((response) => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            return response.json(); // Parse the response as JSON
+            return response.json();
         })
         .then((data) => {
-            // Display the summary response in the summaryResult element
-            summaryResult.textContent = data.result;
+            summaryResult.innerHTML = data.result;
             document.getElementById("processingAnimation").classList.add("hidden");
             this.disabled = false;
         })
@@ -99,64 +139,9 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById("processingAnimation").classList.add("hidden");
             this.disabled = false;
         });
+    }else{
+        alert("Error!! Enter details Correctly!!");
+    }
     });
     
 });
-
-function handleDragOver(event) {
-    event.preventDefault();
-    event.dataTransfer.dropEffect = 'copy';
-}
-
-function handleFileDrop(event) {
-    event.preventDefault();
-    const files = event.dataTransfer.files;
-
-    // Handle the dropped files (e.g., upload to server or process locally)
-    // For now, let's display a message
-    const dragAndDropArea = document.getElementById('dragAndDropArea');
-    dragAndDropArea.innerHTML = '<p>File(s) dropped. Processing...</p>';
-}
-
-
-
-
-// generateSummaryBtn.addEventListener('click', () => {
-//     // Get the selected source type and corresponding input value
-// const selectedOption = sourceTypeSelect.value;
-// let inputText = '';
-
-// if (selectedOption === 'youtube' || selectedOption === 'text') {
-//     // Get the input text from the appropriate input field
-//     inputText = document.getElementById(selectedOption === 'youtube' ? 'youtubeLink' : 'longText').value;
-// }
-
-// if (selectedOption === 'pdf') {
-//     // Handle PDF upload here (you can add this logic)
-//     // For now, let's assume there's no PDF upload
-// }
-
-// // Send a POST request to your Flask server with the selected source type and input text
-// fetch('/summary', {
-//     method: 'GET',
-//     headers: {
-//         'Content-Type': 'application/json',
-//     },
-//     body: JSON.stringify({ sourceType: selectedOption, text: inputText }),
-// })
-//     .then((response) => {
-//         if (!response.ok) {
-//             throw new Error('Network response was not ok');
-//         }
-//         return response.json(); // Parse the response as JSON
-//     })
-//     .then((data) => {
-//         // Display the summary response in the summaryResult element
-//         summaryResult.textContent = data.message;
-//     })
-//     .catch((error) => {
-//         console.error('Error:', error);
-//     });
-// });
-
-// });
