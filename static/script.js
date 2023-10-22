@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="pdf-upload">
                     <div class="drop-pdf-upload">
                     <div id="pdfFileDropArea">
-                        <p id="file-name">Drag & drop files here or click to select files</p>
+                        <p id="file-name">Drag/drop files here <br> or<br>Select files</p>
                         <input type="file" id="pdfFileInput" accept=".pdf" style="display: none;">
                     </div>
                         

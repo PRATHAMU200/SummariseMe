@@ -46,10 +46,25 @@ def youtubecaption(url):
     else:
         l = url.split('/')
         id = l[1]
-    srt = YouTubeTranscriptApi.get_transcript(id)
-    with open("temp/subtitles.txt", "w") as f:
-        for i in srt:
-            f.write("{} ".format(i['text']))
+
+    #extracting and translating transcripts
+    try:
+        try:
+            srt = YouTubeTranscriptApi.get_transcript(id,languages=['en','en-IN'])
+        except:
+            transcript_list = YouTubeTranscriptApi.list_transcripts(id)
+            for transcript in transcript_list:
+                if(transcript.is_translatable):
+                    srt = (transcript.translate('en').fetch())
+                    break
+                else:
+                    raise Exception("Sorry, Can Not Find a sutaible Transcript or Translation in English.")
+    except Exception as e:
+        raise Exception("Warning: Not Able to find any Transcript OR not able to translate it, Please only upload a video with transcript.")
+    with open("temp/subtitles.txt", "w", encoding="utf-8") as f1:
+            for i in srt:
+                if(i['text']!="" and i['text']!="\n"):
+                    f1.write("{} ".format(i['text']))
         
 
 def chunks(s):
@@ -57,7 +72,7 @@ def chunks(s):
     l , u = 0 , 1
     while((len(s)-l)>20):
         word = 0
-        while(word<1000 and u<len(s)):
+        while(word<1200 and u<len(s)):
             if(s[u]==' '):
                 word+=1
             u+=1
@@ -78,3 +93,23 @@ def extractpdftext(file,ps,pe):
             f.write('\n')
     print("done")
 
+# id = "rH8yPFq0Xpo"
+# srt = ""
+#srt = YouTubeTranscriptApi.get_transcript(id,languages=['en'])
+# try:
+#     try:
+#         srt = YouTubeTranscriptApi.get_transcript(id,languages=['en'])
+#     except:
+#         transcript_list = YouTubeTranscriptApi.list_transcripts(id)
+#         for transcript in transcript_list:
+#             if(transcript.is_translatable):
+#                 srt = (transcript.translate('en').fetch())
+#                 break
+#             else:
+#                 raise Exception("Sorry, Can Not Find a sutaible Transcript or Translation in English.")
+# except Exception as e:
+#     raise ("Warning: Could not find any Transcript oe couldn't able to translate it, Please only upload a video with transcript.")
+# with open("temp/subtitles.txt", "w", encoding="utf-8") as f1:
+#         for i in srt:
+#             if(i['text']!="" and i['text']!="\n"):
+#                 f1.write("{} ".format(i['text']))

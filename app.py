@@ -37,4 +37,4 @@ def summary():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="192.168.1.37" ,debug=True)

@@ -9,7 +9,9 @@ body {
     margin: 0 auto;
     padding: 20px;
 }
-
+h2{
+    text-align: center;
+}
 h1 {
     text-align: center;
 }
@@ -160,17 +162,18 @@ input:checked + .slider:before {
   }
   
   .drop-pdf-upload{
-    width: 45em;
+    width: 100%;
     padding: 15px;
     border: 1px solid #333;
+    box-sizing:border-box;
   }
   #pdfFileDropArea{
     border: 2px dashed #bbb;
     -webkit-border-radius: 5px;
     border-radius: 5px;
-    padding: 50px;
+    padding: 10px;
     text-align: center;
-    font: 21pt bold arial;
+    font: 18pt bold arial;
     /* color: #bbb; */
   }
   .dragover{

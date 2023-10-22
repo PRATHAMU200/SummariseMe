@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generative AI Text Summarizer</title>
     <link rel="stylesheet" href="static/styles.css">
-    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 </head>
 <body>
     <div class="container">
-        <h1>Generative AI Text Summarizer</h1>
+        <h1 style="font-family: cursive;">SummariseMe : </h1><h2 style="font-family: monospace;">Generative AI Text Summarizer</h2><br>
         <form class="input-section">
             <label for="sourceModel">Select Model Type:</label>
             <select id="sourceModel" name="sourceModel">
@@ -37,7 +37,7 @@
         </form>
         <div class="output-section">
             <h2>Summary:</h2>
-            <div id="summaryResult">>> {{summary}}</div>
+            <div id="summaryResult" aria-placeholder="Summary Goes Here">>> {{summary}}</div>
         </div>
     </div>
     <script src="static/script.js"></script>
